@@ -49,13 +49,17 @@
   <script>
     const questions = { //建立問題資料結構（巢狀物件），每一層代表一個問題與選項，next指向下一題的代碼。最後一層如 c 是推薦電影，沒有下一題（A: null, B: null）
 
-      start: {//第一層
-        text: "你喜歡探討劇情還是快速看看呢?,
-        A: { text: `快速看看就好"
-        <img src="images/photo1.jpg" alt="我的圖片" width="300">`
-	, next: "aa" },
-        B: { text: "仔細探討劇情", next: "ab" }
-      },
+     start: {
+    text: "你喜歡探討劇情還是快速看看呢?",
+    A: {
+      text: `快速看看就好<br><img src="images/photo1.jpg" alt="我的圖片" width="300">`,
+      next: "aa"
+    },
+    B: {
+      text: "仔細探討劇情",
+      next: "ab"
+    }
+  },
 	    
       aa: {//第二層
     	text: "喜歡正面迎接還是細思極恐的感覺?",
