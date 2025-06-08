@@ -36,15 +36,39 @@
 	  border-radius: 50%;
 	  border-image: repeating-linear-gradient(to bottom left ,#D8E2DC,#d8e2dc,#FAE1DD,#FEC5BB)20;
 	  }
+
   </style>
 </head>
 <body>
-  <h1 class="border1">測測你適合看的電影</h1> <!-- 頁面主標題：測測你適合看的電影 -->
-  <div id="question">載入中...</div> <!--顯示問題文字的區塊，初始為「載入中...」-->
-  <div> <!--顯示兩個選項按鈕，由 JavaScript 控制內容與邏輯-->
-    <button id="btnA">A</button>
-    <button id="btnB">B</button>
+
+  <div id="startPage">
+    <h1 class="border1">歡迎來到電影推薦測驗</h1>
+    <p style="font-size: 24px;">想看看你適合哪種電影嗎？</p>
+    <button onclick="startQuiz()">開始測驗</button>
   </div>
+
+  <div id="quizPage" style="display:none;">
+    <h1 class="border1">測測你適合看的電影</h1> <!-- 頁面主標題：測測你適合看的電影 -->
+    <div id="question">載入中...</div> <!--顯示問題文字的區塊，初始為「載入中...」-->
+    <div> <!--顯示兩個選項按鈕，由 JavaScript 控制內容與邏輯-->
+      <button id="btnA">A</button>
+      <button id="btnB">B</button>
+    </div>
+  </div>
+
+  <!-- 重新遊玩按鈕 -->
+  <button id="restartBtn" onclick="restartQuiz()" style=" 
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #f6c6b5;
+    border: none;
+    border-radius: 10px;
+    display: none;
+    z-index: 999;
+  ">重新遊玩</button>
 
   <script>
     const questions = { //建立問題資料結構（巢狀物件），每一層代表一個問題與選項，next指向下一題的代碼。最後一層如 c 是推薦電影，沒有下一題（A: null, B: null）
@@ -256,28 +280,65 @@
       }
     };
 
-    let current = 'start'; //設定初始狀態為第一題的 key（start）
+  renderQuestion(current); //頁面載入時，顯示第一題
 
-    function renderQuestion(key) { //根據傳入的 key 取得該題的資料，renderQuestion是在這段程式碼中定義的一個JavaScript函式，功能是：根據傳入的題目代碼（key），把對應問題與選項顯示在畫面上
-      const node = questions[key];
-      document.getElementById('question').innerHTML = node.text; //把題目的文字顯示在畫面上
-      const btnA = document.getElementById('btnA'); //取得按鈕 A 和 B 的 DOM 元素。
-      const btnB = document.getElementById('btnB');
+  function startQuiz() {
+    document.getElementById('startPage').style.display = 'none';//把網頁上 id="startPage" 的區塊隱藏起來
+    document.getElementById('quizPage').style.display = 'block';//顯示 id="quizPage" 的區塊也就是「測驗進行中」的畫面
+    showQuestion('start');//呼叫另一個函數 showQuestion，並傳入參數 'start'
+  } 
 
-      if (node.A && node.B) { //如果還有選項 A 和 B（表示不是結尾），執行以下動作：
-        btnA.style.display = 'inline-block'; //顯示按鈕、設置按鈕文字與點擊事件
-        btnB.style.display = 'inline-block';
-        btnA.textContent = node.A.text;
-        btnB.textContent = node.B.text;
-        btnA.onclick = () => renderQuestion(node.A.next);
-        btnB.onclick = () => renderQuestion(node.B.next);
-      } else { //如果沒有 A 和 B（結尾推薦），隱藏按鈕
-        btnA.style.display = 'none';
-        btnB.style.display = 'none';
-      }
+  function showQuestion(id) {
+    const question = questions[id];
+    document.getElementById('question').innerHTML = question.text;// 把該題的問題顯示在網頁上id="question"的地方
+
+    const btnA = document.getElementById('btnA');//抓出畫面的兩個按鈕 A 和 B
+    const btnB = document.getElementById('btnB');
+
+    if (question.A === null && question.B === null) {//如果這一題沒有選項 A 和 B 代表這題是「結果頁」
+      btnA.style.display = 'none';//把按鈕藏起來，不讓使用者選
+      btnB.style.display = 'none';
+    } 
+
+    else {
+      btnA.style.display = 'inline-block';//顯示 A 和 B 按鈕
+      btnB.style.display = 'inline-block';
+      btnA.textContent = question.A.text;//把 A、B 按鈕文字設為這一題的選項內容
+      btnB.textContent = question.B.text;
+      btnA.onclick = () => showQuestion(question.A.next);//按 A 跳到 question.A.next 這題
+      btnB.onclick = () => showQuestion(question.B.next);//按 B 跳到 question.B.next 這題
     }
+  }
 
-    renderQuestion(current); //頁面載入時，顯示第一題
-  </script>
+function restartQuiz() {
+  currentNode = "start";//把目前題目的 ID 重設為 "start"，也就是第一題的編號，這樣下一次顯示的就是第一題
+  document.getElementById("quizPage").style.display = "block";//讓使用者看到題目
+  document.getElementById("startPage").style.display = "none";//讓「開始頁面」不顯示，避免重複出現
+  document.getElementById("restartBtn").style.display = "none"; //把「重新開始」按鈕藏起來
+  showQuestion(currentNode);//呼叫 showQuestion("start") 顯示第一題的內容
+}
+
+function showQuestion(code) {
+  const question = questions[code];
+  const questionDiv = document.getElementById("question");//顯示題目文字的區塊存到 questionDiv
+  questionDiv.innerHTML = question.text;//讓使用者可以看到這個題目的題目文字
+    
+  // 如果已經是最終推薦頁面（沒有 A/B 選項）
+  if (question.A === null && question.B === null) {
+    document.getElementById("btnA").style.display = "none";
+    document.getElementById("btnB").style.display = "none";
+    document.getElementById("restartBtn").style.display = "block"; // 顯示重新遊玩按鈕
+  } else {
+    document.getElementById("btnA").style.display = "inline-block";
+    document.getElementById("btnB").style.display = "inline-block";
+    document.getElementById("btnA").textContent = question.A.text;
+    document.getElementById("btnB").textContent = question.B.text;
+    // 更新點擊事件
+    document.getElementById("btnA").onclick = () => showQuestion(question.A.next);
+    document.getElementById("btnB").onclick = () => showQuestion(question.B.next);
+  }
+}
+
+</script>
 </body>
-</html> 
+</html>
