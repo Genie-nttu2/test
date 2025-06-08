@@ -12,7 +12,7 @@
 	    background:#F8EEEA;
     }
     #question { /*設定問題文字的大小與下方空隙 */
-      font-size: 24px;
+      font-size: 30px;
       margin-bottom: 30px;
 	    margin: 0 auto 30px auto; /* 上、左右自動置中、下 30px */
 	    background-color: #FAE1DD;
@@ -20,7 +20,7 @@
 	    border-radius: 20px; /* 圓角讓外觀更柔和 */
     }
     button { /*設定按鈕大小、內距、外距 */
-      font-size: 20px;
+      font-size: 30px;
       padding: 10px 30px;
       margin: 10px;
       cursor: pointer;/* 游標變成一隻手指形狀 */
@@ -49,85 +49,79 @@
   <script>
     const questions = { //建立問題資料結構（巢狀物件），每一層代表一個問題與選項，next指向下一題的代碼。最後一層如 c 是推薦電影，沒有下一題（A: null, B: null）
 
-     start: {
-  text: `<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo1.jpg" alt="測驗封面" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡探討劇情還是快速看看呢?`,
-  A: {
-    text: "快速看看就好",
-    next: "aa"
-  },
-  B: {
-    text: "仔細探討劇情",
-    next: "ab"
-  }
-},
-	    
+    start: {//第一層
+      text: `<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo1.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡探討劇情還是快速看看呢?`,
+      A: {text: "快速看看就好",next: "aa"},
+      B: {text: "仔細探討劇情",next: "ab"}
+    },
+
       aa: {//第二層
-    	text: "喜歡正面迎接還是細思極恐的感覺?",
+    	  text: `<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo2.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>喜歡正面迎接還是細思極恐的感覺?`,
         A: { text: "正面迎接", next: "aaa" },
         B: { text: "細思極恐", next: "aab" }
       },
       ab: {
-        text: "輕鬆看個故事還是認真搞個議題?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo3.png" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>輕鬆看個故事還是認真搞個議題?`,
         A: { text: "認真來看", next: "aba" },
         B: { text: "輕鬆故事", next: "abb" }
       },
       aaa: {//第三層
-        text: "想不想有點恐怖嚇死你的感覺?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo4.jpeg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>想不想有點恐怖嚇死你的感覺?`,
         A: { text: "好啊好啊", next: "aaaa" },
         B: { text: "當然不要", next: "aaab" }
       },
       aab: {
-        text: "喜歡突然爆發的事件嗎?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo5.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>喜歡突然爆發的事件嗎?`,
         A: { text: "來點刺激的", next: "aaba" },
         B: { text: "溫和一點吧", next: "aabb" }
       },
       aba: {
-        text: "你更愛人類還是跟動物有關的議題?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo6.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你更愛人類還是跟動物有關的議題?`,
         A: { text: "人類", next: "abaa" },
         B: { text: "動物", next: "abab" }
       },
       abb: {
-        text: "你選愛情還是麵包(理想點或現實點)?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo7.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你選愛情還是麵包(理想點或現實點)?`,
         A: { text: "愛情(理想點)", next: "abba" },
         B: { text: "麵包(現實點)", next: "abbb" }
       },
       aaaa: {//第四層
-        text: "你喜歡毛骨悚然的感覺嗎?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo8.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡毛骨悚然的感覺嗎?`,
         A: { text: "喜歡毛骨悚然", next: "c" },
         B: { text: "不喜歡毛骨悚然", next: "d" }
       },
       aaab: {
-        text: "你喜歡緊張感嗎?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo9.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡緊張感嗎?`,
         A: { text: "喜歡緊張感", next: "e" },
         B: { text: "不喜歡緊張感", next: "f" }
       },
      aaba: {
-        text: "你喜歡打鬥嗎?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo10.png" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡打鬥嗎?`,
         A: { text: "喜歡打鬥", next: "g" },
         B: { text: "不喜歡打鬥", next: "h" }
       },
       aabb: {
-        text: "你喜歡舞蹈嗎?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo11.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡舞蹈嗎?`,
         A: { text: "喜歡舞蹈", next: "i" },
         B: { text: "不喜歡舞蹈", next: "j" }
       },
       abaa: {
-        text: "你喜不喜歡真人出境?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo12.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜不喜歡真人出境?`,
         A: { text: "喜歡真人出境", next: "k" },
         B: { text: "不喜歡真人出境", next: "l" }
       },
       abab: {
-        text: "你喜不喜歡真實的小動物?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo13.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜不喜歡真實的小動物?`,
         A: { text: "喜歡", next: "m" },
         B: { text: "不喜歡", next: "n" }
       },
       abba: {
-        text: "你想不想看甜甜的愛情?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo14.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你想不想看甜甜的愛情?`,
         A: { text: "想要", next: "o" },
         B: { text: "不想", next: "p" }
       },
       abbb: {
-        text: "你喜歡實事求是嗎?",
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo15.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡實事求是嗎?`,
         A: { text: "喜歡", next: "q" },
         B: { text: "不喜歡", next: "r" }
       },
