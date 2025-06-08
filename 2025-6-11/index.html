@@ -37,6 +37,9 @@
 	  border-image: repeating-linear-gradient(to bottom left ,#D8E2DC,#d8e2dc,#FAE1DD,#FEC5BB)20;
 	  }
 
+  #shareButtons {
+    display: none;
+    }
   </style>
 </head>
 <body>
@@ -69,6 +72,11 @@
     display: none;
     z-index: 999;
   ">重新遊玩</button>
+
+  <div id="shareButtons" onclick="shareQuiz()" style="margin-top: 20px;">
+    <button onclick="shareToLine()">分享至 LINE</button>
+    <button onclick="shareToFacebook()">分享至 Facebook</button>
+  </div>
 
   <script>
     const questions = { //建立問題資料結構（巢狀物件），每一層代表一個問題與選項，next指向下一題的代碼。最後一層如 c 是推薦電影，沒有下一題（A: null, B: null）
@@ -315,6 +323,7 @@ function restartQuiz() {
   document.getElementById("quizPage").style.display = "block";//讓使用者看到題目
   document.getElementById("startPage").style.display = "none";//讓「開始頁面」不顯示，避免重複出現
   document.getElementById("restartBtn").style.display = "none"; //把「重新開始」按鈕藏起來
+  document.getElementById("shareButtons").style.display = "none";//把「分享」按鈕藏起來
   showQuestion(currentNode);//呼叫 showQuestion("start") 顯示第一題的內容
 }
 
@@ -328,6 +337,8 @@ function showQuestion(code) {
     document.getElementById("btnA").style.display = "none";
     document.getElementById("btnB").style.display = "none";
     document.getElementById("restartBtn").style.display = "block"; // 顯示重新遊玩按鈕
+    document.getElementById("shareButtons").style.display = "block";// 顯示分享按鈕
+  
   } else {
     document.getElementById("btnA").style.display = "inline-block";
     document.getElementById("btnB").style.display = "inline-block";
@@ -338,6 +349,18 @@ function showQuestion(code) {
     document.getElementById("btnB").onclick = () => showQuestion(question.B.next);
   }
 }
+
+  function shareToLine() {
+  const text = encodeURIComponent("我剛完成了這個測驗，快來試試你是什麼類型！");
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, "_blank");
+  }
+
+  function shareToFacebook() {
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+  }
+
 
 </script>
 </body>
