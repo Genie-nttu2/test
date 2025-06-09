@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>測測你適合看的電影</title>
+  <style>
+    body { /*設定整體網頁字型、文字置中、內距為 50px */
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+	    background:#F8EEEA;
+    }
+    #question { /*設定問題文字的大小與下方空隙 */
+      font-size: 30px;
+      margin-bottom: 30px;
+	    margin: 0 auto 30px auto; /* 上、左右自動置中、下 30px */
+	    background-color: #FAE1DD;
+      max-width: 1000px;   /* 最大寬度限制，不讓太寬 */
+	    border-radius: 20px; /* 圓角讓外觀更柔和 */
+    }
+    button { /*設定按鈕大小、內距、外距 */
+      font-size: 30px;
+      padding: 10px 30px;
+      margin: 10px;
+      cursor: pointer;/* 游標變成一隻手指形狀 */
+	    background-color: #DEEAE8;  
+	    border-bottom-left-radius: 20px 20px;
+	    border-bottom-right-radius: 20px 20px;
+	    border-top-left-radius: 20px 20px;
+	    border-top-right-radius: 20px 20px;
+    }
+	.border1{
+	  border : 10px solid;
+	  padding: 10px;
+	  border-radius: 50%;
+	  border-image: repeating-linear-gradient(to bottom left ,#D8E2DC,#d8e2dc,#FAE1DD,#FEC5BB)20;
+	  }
+
+  #shareButtons {
+    display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="startPage">
+    <h1 class="border1">歡迎來到電影推薦測驗</h1>
+    <p style="font-size: 24px;">想看看你適合哪種電影嗎？</p>
+    <button onclick="startQuiz()">開始測驗</button>
+  </div>
+
+  <div id="quizPage" style="display:none;">
+    <h1 class="border1">測測你適合看的電影</h1> <!-- 頁面主標題：測測你適合看的電影 -->
+    <div id="question">載入中...</div> <!--顯示問題文字的區塊，初始為「載入中...」-->
+    <div> <!--顯示兩個選項按鈕，由 JavaScript 控制內容與邏輯-->
+      <button id="btnA">A</button>
+      <button id="btnB">B</button>
+    </div>
+  </div>
+
+  <!-- 重新遊玩按鈕 -->
+  <button id="restartBtn" onclick="restartQuiz()" style=" 
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #f6c6b5;
+    border: none;
+    border-radius: 10px;
+    display: none;
+    z-index: 999;
+  ">重新遊玩</button>
+
+  <div id="shareButtons" onclick="shareQuiz()" style="margin-top: 20px;">
+    <button onclick="shareToLine()">分享至 LINE</button>
+    <button onclick="shareToFacebook()">分享至 Facebook</button>
+  </div>
+
+  <script>
+    const questions = { //建立問題資料結構（巢狀物件），每一層代表一個問題與選項，next指向下一題的代碼。最後一層如 c 是推薦電影，沒有下一題（A: null, B: null）
+
+    start: {//第一層
+      text: `<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo1.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡探討劇情還是快速看看呢?`,
+      A: {text: "快速看看就好",next: "aa"},
+      B: {text: "仔細探討劇情",next: "ab"}
+    },
+
+      aa: {//第二層
+    	  text: `<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo2.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>喜歡正面迎接還是細思極恐的感覺?`,
+        A: { text: "正面迎接", next: "aaa" },
+        B: { text: "細思極恐", next: "aab" }
+      },
+      ab: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo3.png" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>輕鬆看個故事還是認真搞個議題?`,
+        A: { text: "認真來看", next: "aba" },
+        B: { text: "輕鬆故事", next: "abb" }
+      },
+      aaa: {//第三層
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo4.jpeg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>想不想有點恐怖嚇死你的感覺?`,
+        A: { text: "好啊好啊", next: "aaaa" },
+        B: { text: "當然不要", next: "aaab" }
+      },
+      aab: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo5.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>喜歡突然爆發的事件嗎?`,
+        A: { text: "來點刺激的", next: "aaba" },
+        B: { text: "溫和一點吧", next: "aabb" }
+      },
+      aba: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo6.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你更愛人類還是跟動物有關的議題?`,
+        A: { text: "人類", next: "abaa" },
+        B: { text: "動物", next: "abab" }
+      },
+      abb: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo7.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你選愛情還是麵包(理想點或現實點)?`,
+        A: { text: "愛情(理想點)", next: "abba" },
+        B: { text: "麵包(現實點)", next: "abbb" }
+      },
+      aaaa: {//第四層
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo8.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡毛骨悚然的感覺嗎?`,
+        A: { text: "喜歡毛骨悚然", next: "c" },
+        B: { text: "不喜歡毛骨悚然", next: "d" }
+      },
+      aaab: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo9.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡緊張感嗎?`,
+        A: { text: "喜歡緊張感", next: "e" },
+        B: { text: "不喜歡緊張感", next: "f" }
+      },
+     aaba: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo10.png" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡打鬥嗎?`,
+        A: { text: "喜歡打鬥", next: "g" },
+        B: { text: "不喜歡打鬥", next: "h" }
+      },
+      aabb: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo11.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡舞蹈嗎?`,
+        A: { text: "喜歡舞蹈", next: "i" },
+        B: { text: "不喜歡舞蹈", next: "j" }
+      },
+      abaa: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo12.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜不喜歡真人出境?`,
+        A: { text: "喜歡真人出境", next: "k" },
+        B: { text: "不喜歡真人出境", next: "l" }
+      },
+      abab: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo13.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜不喜歡真實的小動物?`,
+        A: { text: "喜歡", next: "m" },
+        B: { text: "不喜歡", next: "n" }
+      },
+      abba: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo14.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你想不想看甜甜的愛情?`,
+        A: { text: "想要", next: "o" },
+        B: { text: "不想", next: "p" }
+      },
+      abbb: {
+        text:`<img src="https://genie-nttu2.github.io/test/2025-6-11/images/photo15.jpg" alt="測驗封面" style="max-width: 100%; height: 500px; border-radius: 10px; margin-bottom: 20px;"><br>你喜歡實事求是嗎?`,
+        A: { text: "喜歡", next: "q" },
+        B: { text: "不喜歡", next: "r" }
+      },
+    
+      c :{
+         text: `推薦你看《牠》劇情簡介: 故事描述七名少年遭到「牠」盯上，而陷入各自的恐懼之中；該故事的主題為「記憶、童年創傷，以及隱藏在傳統小鎮價值觀背後的醜陋。」<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/i8-HwegJbF4" title="【牠】中文官方預告，今年９月上映" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+         <img src="https://upload.wikimedia.org/wikipedia/zh/8/8c/It_2017_Poster.jpg" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null
+      },
+      d: {
+         text: `推薦你看《安娜貝爾》劇情簡介:為了替懷孕的妻子米亞找到特別的禮物，這個美麗、珍貴，穿著白色禮服的古董娃哇吸引了約翰佛姆的目光，而米亞也確實非常鍾愛這個與眾不同的禮物。但是幸福感維持不了多久，各種厄運與難以解釋的超自然詭異狀況不斷地發生在這對小夫妻身上，再也不得安寧。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/zC3GjYyPwYI" title="【安娜貝爾】電影官方前導預告 (HD)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://th.bing.com/th/id/R.e15919cf6a58fc8883665e59c6e03c0d?rik=hwtrAn4zhE2%2btw&riu=http%3a%2f%2fwww.iwant-radio.com%2ffiles%2fshowenclosure%2f34679%2fd-c0001_20130822_cg060801x54_01_b.jpg&ehk=ts7%2beWIZmfrugLTUb07fN048iR9A3CCJxexAYk7JnLs%3d&risl=&pid=ImgRaw&r=0" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      e: {
+         text: `推薦你看《孤兒怨》劇情簡介: 講述一對夫妻在流產後，決定領養一個孤兒走出喪女之痛。兩人基於女孩「艾絲特」的淒慘背景，決定把她帶回家。然而一次在學校的意外，讓養母對她的過去產生了懷疑，女孩似乎並不如她想像中單純。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/0InU79e4gDs" title="孤兒怨 中文預告" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://th.bing.com/th/id/OIP.FNPkTTRih20ZZFTU0ngrtAHaJ4?rs=1&pid=ImgDetMain" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      f: {
+         text: `推薦你看《浩劫重生》劇情簡介:在一次出差的旅程中，查克搭的小飛機失事，他被困在一座資源貧瘠的無人荒島，當他生活唯一的目的只有求生，他的人生觀反而逐漸有所轉變，最後對於工作、感情，甚至生命本身都有全新的體會和領悟。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/JFx4CESfvOI" title="好萊塢電影台104年10月03日預告浩劫重生" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://summersky.blog/wp-content/uploads/2023/07/cast-away.jpg" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      g: { 
+         text: `推薦你看《臥虎藏龍》劇情簡介: 故事描述青冥劍帶出江湖的恩怨情仇，其中更穿插著俠義的存在，除了彰顯出中國武術的博大精深，亦添加江湖兒女的愛戀情懷。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/DEsArIYx2qE" title="臥虎藏龍 預告" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://image.tmdb.org/t/p/original/3sxXywx6H7d8JCI6zuhNundxaQ3.jpg" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      h: {
+         text: `推薦你看《屍速列車》劇情簡介: 故事敘述不明病毒全韓擴散，此時一班開往釜山的列車中出現了活屍，令車上的人們驚恐不已，為逃出失控活屍的侵襲，人們彼此之間也展開真實血淋淋的攻防戰。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/26Xk01bdev0" title="【屍速列車】Train to Busan 正式版預告 9/2(五) 屍裡逃生" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://pic.321tw.com/pic/1723.jpg" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      i: {
+         text: `推薦你看《歌喉讚》劇情簡介: 嚮往DJ工作的大學新鮮人貝卡，加入一個由怪咖女生等所組成的阿卡貝拉樂團，貝卡為這個講究傳統編曲、注重和聲默契的音樂文化注入新潮的混搭風，準備以耳目一新的姿態問鼎美國大學的阿卡貝拉歌唱大賽。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/2-wjvgoHmIA" title="【歐美電影】歌喉讚「Pitch_Perfect」《電影預告》HD畫質" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://th.bing.com/th/id/OIP.FfDD1aWHLSHXy8xhhSd2xQHaKs?rs=1&pid=ImgDetMain" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      j: {
+         text: `推薦你看《不可能的任務(1996)》劇情簡介: 不可能任務情報局（IMF）的一支小隊在布拉格執行任務時發生差錯導致全滅，只有伊森·韓特一人殘存，他因而被誣指為叛徒。為了洗刷冤屈，伊森只能突破自己人的重重追殺，直搗中央情報局（CIA）總部揪出真正的主謀者。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/L8Pbjh4EZRk" title="Mission: Impossible (1996) | Official Trailer - Tom Cruise" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://media.themoviedb.org/t/p/w600_and_h900_bestv2/9cMgNhyvB1FL1mdUAQ4VXCTfVEP.jpg" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      k: {
+         text: `推薦你看《魔戒首部曲：魔戒現身》劇情簡介:佛羅多巴金是個年輕的哈比族人，他從表哥那裏得到了一只的魔幻戒指。戒指中的邪惡力量會讓人產生難以抵擋的欲望，考驗著每一個接觸戒指者的意志力。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/jdvaHD492W8" title="【魔戒首部曲：魔戒現身】4月29日(週四) 重回大銀幕" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://th.bing.com/th/id/OIP.Fe-zd7pd7lKnwdBauA28UQHaLH?rs=1&pid=ImgDetMain" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      l: {
+         text: `推薦你看《道別的早晨就用約定之花點綴》劇情簡介: 一個幾乎不會老的「離別一族」少女瑪奇亞經歷了族人被滅，養育孩子，漫長的獨自生活之後，對於自己「離別一族」的身份有了重新的認識。因為害怕離別、害怕孤獨就不去愛嗎？那麼即使擁有不老的容貌，漫長似永生一樣的人生又有什麼意義呢？<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/YIQa8nhHvEo" title="电影《于离别之朝束起约定之花》预告中文字幕" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://th.bing.com/th/id/OIP.i0LuUS2Q4LovAvcN80xtFQAAAA?rs=1&pid=ImgDetMain" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      m: {
+         text: `推薦你看《大貓》劇情簡介: 這部紀錄片基本涵蓋了整個貓科動物，比如非洲獅、虎、美洲豹、金錢豹、獵豹、雪豹及各種野貓等貓科動物都會紛紛出鏡。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/W86cTIoMv2U" title="世界上最小的貓－大貓：前導影片－BBC One" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://th.bing.com/th/id/OIP.A87HLhzt6QbSZ8xiWpJDnwHaKn?rs=1&pid=ImgDetMain" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      n: {
+         text: `推薦你看《猩球崛起(2011)》劇情簡介: 威爾·羅曼一直致力於名為「Cure」的基因藥物的開發。最終在一隻名為凱撒的大猩猩身上獲得成功。威爾發現凱撒的智力極大地提高。看護所的殘酷對待，使得凱撒利用智慧進行抗爭，最終救走了同時被囚禁的其他猩猩，而且對它們都使用了Cure。一群高智商的猩猩與人類對立的戰爭就此拉開。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/qmF9EFYkXWU" title="【猩球崛起】電影預告" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://picb0.photophoto.cn/16/680/16680300_1.jpg" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      o: {
+         text: `推薦你看《真愛每一天》劇情簡介: 提姆雷克的父親在提姆21歲那年告訴了他一件秘密，就是他們家族中的男性都有穿越時光的能力。透過這個能力，提姆可以改變自己生命中正在發生以及已經發生的事情。於是提姆不斷地重回他和心儀的女孩初相識的那一刻、不斷地讓他倆的相遇越來越趨近「完美」……。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/QWU_iJ-aTRQ" title="【真愛每一天】最新浪漫預告-9月18日 愛要及時" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://th.bing.com/th/id/R.0f322983fc2631a73c1f97db52d9dea5?rik=5bbDuWdGvV3Cng&riu=http%3a%2f%2fwww.truemovie.com%2f2012Poster%2fabout_time.jpg&ehk=rkfYjZJswjKJE3EELZ74JLeNUPnbOhnEAljqwD6MBU4%3d&risl=&pid=ImgRaw&r=0" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      p: {
+         text: `推薦你看《三個傻瓜》劇情簡介: 三名年輕人：法罕、拉加與藍丘，進入了印度首屈一指的帝國理工大學，三人共居一室，結為好友。在青春輕狂與理想抱負等種種情況交雜的大學生活中，各自都因為彼此影響而有了更多成長體認。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/-9rp9sNP63k" title="friDay影音《三個傻瓜》電影預告" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://media.themoviedb.org/t/p/w600_and_h900_bestv2/qEVZeu6ODIpS3zwyhOxKEmvkDpH.jpg" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      q: {
+         text: `推薦你看《凡爾賽拜金女》劇情簡介: 講述年輕的奧地利公主瑪麗安東尼嫁到法國，在充滿禮俗與八卦的凡爾賽，她靠著奢華的味蕾與購物習慣麻痹自己與她身為王后的職責，最終，她的揮霍導致了悲劇。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/oAeRik1YyMs" title="Marie Antoinette (2006) - I Want Candy Scene | Movieclips" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://images.gamme.com.tw/movie/2022/297/m5mTpqSZj6Snr6CW.jpg" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      },
+      r: {
+         text: `推薦你看《關鍵少數》劇情簡介: 用戲劇及喜劇的手法，改編了 3 個傑出非裔女性在 1960 年代美國國家航空暨太空總署（NASA）研究中心工作的故事，講述他們在工作領域上受到白人各種各樣的種族歧視。<br><br>
+         <div style="display: flex; gap: 30px; align-items: flex-start;">
+         <iframe style="width: 800px; height: 450px;" src="https://www.youtube.com/embed/wyBHM5TRcv4" title="龍華洋片【關鍵少數】精彩預告" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         <img src="https://www.ccr.com.tw/GIMG/341/4710756371236_1rmf.JPG" style="height: 450px; width: auto; border-radius: 10px;">
+         </div>`,
+         A: null, B: null 
+      }
+    };
+
+  renderQuestion(current); //頁面載入時，顯示第一題
+
+  function startQuiz() {
+    document.getElementById('startPage').style.display = 'none';//把網頁上 id="startPage" 的區塊隱藏起來
+    document.getElementById('quizPage').style.display = 'block';//顯示 id="quizPage" 的區塊也就是「測驗進行中」的畫面
+    showQuestion('start');//呼叫另一個函數 showQuestion，並傳入參數 'start'
+  } 
+
+  function showQuestion(id) {
+    const question = questions[id];
+    document.getElementById('question').innerHTML = question.text;// 把該題的問題顯示在網頁上id="question"的地方
+
+    const btnA = document.getElementById('btnA');//抓出畫面的兩個按鈕 A 和 B
+    const btnB = document.getElementById('btnB');
+
+    if (question.A === null && question.B === null) {//如果這一題沒有選項 A 和 B 代表這題是「結果頁」
+      btnA.style.display = 'none';//把按鈕藏起來，不讓使用者選
+      btnB.style.display = 'none';
+    } 
+
+    else {
+      btnA.style.display = 'inline-block';//顯示 A 和 B 按鈕
+      btnB.style.display = 'inline-block';
+      btnA.textContent = question.A.text;//把 A、B 按鈕文字設為這一題的選項內容
+      btnB.textContent = question.B.text;
+      btnA.onclick = () => showQuestion(question.A.next);//按 A 跳到 question.A.next 這題
+      btnB.onclick = () => showQuestion(question.B.next);//按 B 跳到 question.B.next 這題
+    }
+  }
+
+function restartQuiz() {
+  currentNode = "start";//把目前題目的 ID 重設為 "start"，也就是第一題的編號，這樣下一次顯示的就是第一題
+  document.getElementById("quizPage").style.display = "block";//讓使用者看到題目
+  document.getElementById("startPage").style.display = "none";//讓「開始頁面」不顯示，避免重複出現
+  document.getElementById("restartBtn").style.display = "none"; //把「重新開始」按鈕藏起來
+  document.getElementById("shareButtons").style.display = "none";//把「分享」按鈕藏起來
+  showQuestion(currentNode);//呼叫 showQuestion("start") 顯示第一題的內容
+}
+
+function showQuestion(code) {
+  const question = questions[code];
+  const questionDiv = document.getElementById("question");//顯示題目文字的區塊存到 questionDiv
+  questionDiv.innerHTML = question.text;//讓使用者可以看到這個題目的題目文字
+    
+  // 如果已經是最終推薦頁面（沒有 A/B 選項）
+  if (question.A === null && question.B === null) {
+    document.getElementById("btnA").style.display = "none";
+    document.getElementById("btnB").style.display = "none";
+    document.getElementById("restartBtn").style.display = "block"; // 顯示重新遊玩按鈕
+    document.getElementById("shareButtons").style.display = "block";// 顯示分享按鈕
+  
+  } else {
+    document.getElementById("btnA").style.display = "inline-block";
+    document.getElementById("btnB").style.display = "inline-block";
+    document.getElementById("btnA").textContent = question.A.text;
+    document.getElementById("btnB").textContent = question.B.text;
+    // 更新點擊事件
+    document.getElementById("btnA").onclick = () => showQuestion(question.A.next);
+    document.getElementById("btnB").onclick = () => showQuestion(question.B.next);
+  }
+}
+
+  function shareToLine() {
+  const text = encodeURIComponent("我剛完成了這個測驗，快來試試你是什麼類型！");
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, "_blank");
+  }
+
+  function shareToFacebook() {
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+  }
+
+
+</script>
+</body>
+</html>
